@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsh-datavis"
+version = "0.1.0"
+description = "Data visualization and editing tool"
+readme = "README.md"
+authors = [
+    {name = "John Richmond", email = "confusedjohn46@gmailcom"},
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "gradio>=3.50.2",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "Pillow>=10.0.0",
+    "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8",
+]
