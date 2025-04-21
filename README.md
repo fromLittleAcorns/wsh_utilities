@@ -1,3 +1,15 @@
+---
+title: Data Visualizer and Editor
+emoji: 📊
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 3.50.2
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # Data Visualizer and Editor
 
 An interactive tool for visualizing and editing dataframes. Upload your data, visualize it with images, and edit fields directly in the browser.

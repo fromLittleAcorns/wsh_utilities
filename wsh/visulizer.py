@@ -152,11 +152,13 @@ def create_dataframe_loader_app(
                 print("No SKUs found in dataframe")
                 
             # Update the SKU dropdown and switch tabs
+            first_sku = choices[0] if choices else None
             return (
                 f"Successfully loaded dataframe with {len(df)} rows and {len(df.columns)} columns", 
-                gr.update(choices=choices, value=choices[0] if choices else None),
+                gr.update(choices=choices, value=first_sku),
                 gr.update(visible=False),  # Hide no-data message
-                gr.update(visible=True)    # Show visualization container
+                gr.update(visible=True),   # Show visualization container
+                first_sku                  # Return the first SKU as an additional value
             )
         except Exception as e:
             print(f"Error loading file: {str(e)}")
@@ -194,13 +196,27 @@ def create_dataframe_loader_app(
             return f"Error processing images: {str(e)}"
     
     # Function to save the dataframe
-    def save_dataframe(format_choice):
+    def save_dataframe(format_choice, custom_filename=None):
         if state.df is None:
             return "No dataframe to save", None
         
         try:
-            output_path = os.path.join(temp_dir, f"dataframe.{format_choice}")
+            # Determine the correct file extension based on format_choice
+            if format_choice == 'excel':
+                file_extension = 'xlsx'
+            else:
+                file_extension = format_choice
             
+            # Use custom filename if provided, otherwise use "dataframe"
+            base_filename = custom_filename if custom_filename and custom_filename.strip() else "dataframe"
+            
+            # Make sure the filename is safe for filesystem use
+            base_filename = "".join(c for c in base_filename if c.isalnum() or c in "._- ")
+            
+            # Create the output path
+            output_path = os.path.join(temp_dir, f"{base_filename}.{file_extension}")
+            
+            # Save the dataframe in the selected format
             if format_choice == 'csv':
                 state.df.to_csv(output_path)
             elif format_choice == 'excel':
@@ -214,7 +230,7 @@ def create_dataframe_loader_app(
         except Exception as e:
             print(f"Error saving dataframe: {str(e)}")
             return f"Error saving dataframe: {str(e)}", None
-    
+        
     # Function to update any field in the dataframe
     def update_field(sku, field, value):
         if state.df is None or sku not in state.df.index:
@@ -364,6 +380,14 @@ def create_dataframe_loader_app(
             results[-1] = error_msg
             return current_sku, *results
     
+    def get_first_sku_details():
+        if state.df is None or len(state.df.index) == 0:
+            return [None] * len(output_components)
+        
+        first_sku = state.df.index[0]
+        print(f"Loading first SKU details for: {first_sku}")
+        return get_part_details(first_sku)
+
     # Create the Gradio interface
     # Set theme based on compact mode
     if compact_mode:
@@ -416,6 +440,12 @@ def create_dataframe_loader_app(
                 with gr.Row():
                     with gr.Column():
                         gr.Markdown("## Save Data")
+                        filename_input = gr.Textbox(
+                            label="Filename (without extension)",
+                            placeholder="dataframe",
+                            value="dataframe",
+                            interactive=True
+)
                         save_format = gr.Radio(
                             choices=["csv", "excel", "pkl"],
                             value="csv",
@@ -592,37 +622,6 @@ def create_dataframe_loader_app(
         
         print(f"Output components count: {len(output_components)}")
         
-        # Function to handle loading the first SKU after file upload
-        def trigger_first_sku(dropdown_update, status_message):
-            try:
-                print(f"trigger_first_sku called, dropdown_update: {dropdown_update}")
-                
-                # Check if we received valid data
-                if hasattr(dropdown_update, 'choices') and dropdown_update.choices:
-                    print(f"Found choices in dropdown_update: {dropdown_update.choices}")
-                    
-                    # Get the first SKU
-                    first_sku = dropdown_update.choices[0]
-                    if first_sku:
-                        print(f"First SKU determined: {first_sku}")
-                        
-                        # Get details for this SKU
-                        details = get_part_details(first_sku)
-                        
-                        # Return the first SKU to update the dropdown, plus all details
-                        return first_sku, *details
-                    else:
-                        print("No first SKU found")
-                else:
-                    print("No choices found in dropdown_update")
-                
-                # If we got here, we couldn't determine the first SKU
-                return None, *([None] * len(output_components))
-            except Exception as e:
-                print(f"Error in trigger_first_sku: {str(e)}")
-                traceback.print_exc()
-                return None, *([None] * len(output_components))
-        
         # Connect file upload events
         upload_button.click(
             fn=process_dataframe,
@@ -633,10 +632,17 @@ def create_dataframe_loader_app(
             inputs=None,
             outputs=tabs
         ).then(
-            fn=trigger_first_sku,
-            inputs=[sku_dd, upload_status],  # Pass both the updated dropdown and the status message
-            outputs=[sku_dd] + output_components
-        )
+            # Add a small delay to ensure the tab is fully visible before updating components
+            fn=lambda: None,  # Do nothing, just add a delay
+            inputs=None,
+            outputs=None,
+            js="() => new Promise(resolve => setTimeout(() => resolve(), 300))"  # 300ms delay
+        ).then(
+            # Now trigger the details load with the current SKU value
+            fn=lambda: get_part_details(state.df.index[0]) if state.df is not None and len(state.df.index) > 0 else [None] * len(output_components),
+            inputs=None,
+            outputs=output_components
+)
         
         upload_images_button.click(
             fn=process_images,
@@ -646,9 +652,9 @@ def create_dataframe_loader_app(
         
         save_button.click(
             fn=save_dataframe,
-            inputs=save_format,
+            inputs=[save_format, filename_input],
             outputs=[save_status, download_file]
-        )
+)
         
         # Connect visualization events
         # Always connect the SKU dropdown change event
@@ -670,6 +676,12 @@ def create_dataframe_loader_app(
             inputs=sku_dd,
             outputs=[sku_dd] + output_components
         )
+
+        # tabs.change(
+        #     fn=lambda tab_name: gr.update(value=state.df.index[0]) if tab_name == "Visualize & Edit" and state.df is not None and len(state.df.index) > 0 else gr.update(),
+        #     inputs=tabs,
+        #     outputs=sku_dd
+        # )
         
         # Connect update events for editable fields
         for field, field_box in all_field_boxes.items():
@@ -683,8 +695,8 @@ def create_dataframe_loader_app(
         # Connect update event for cs_out if it's visible and editable
         if cs_out_visible and cs_out_box and "cs_out" in editable_fields:
             cs_out_box.change(
-                fn=lambda sku, value: update_field(sku, "cs_out", value),
-                inputs=[sku_dd, cs_out_box],
+                fn=update_field,
+                inputs=[sku_dd, gr.State("cs_out"), cs_out_box],
                 outputs=error_box
             )
         
@@ -695,5 +707,7 @@ def create_dataframe_loader_app(
                 inputs=None,
                 outputs=output_components
             )
+
+        tabs
     
     return demo

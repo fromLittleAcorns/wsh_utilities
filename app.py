@@ -27,7 +27,7 @@ right_fields = ["Name", "Brand", "Short description", "Colour_new", "Finish_new"
 
 # Define editable fields
 editable = ["Brand", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Pack quantity", 
-           "Parts", "Fire rated?", "Certified", "Guarantee"]
+           "Parts", "Fire rated?", "Certified", "Guarantee", "Name"]
 
 # Create a visuliser
 vis = create_dataframe_loader_app(
