@@ -44,4 +44,4 @@ vis = create_dataframe_loader_app(
 
 # Launch the app
 if __name__ == "__main__":
-    vis.launch()
+    vis.launch(server_name="0.0.0.0", root_path="/vis", share=False)
