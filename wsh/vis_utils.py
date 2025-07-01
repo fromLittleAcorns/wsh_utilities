@@ -20,6 +20,15 @@ def resize_image_with_max_side_length(image, max_side_length):
     resized_image = image.resize((new_width, new_height))
     return resized_image
 
+def resize_image_with_max_height(image, max_height):
+    """Resize an image while maintaining aspect ratio."""
+    width, height = image.size
+    ratio = max_height / height
+    new_width = ratio * width
+    new_height = max_height
+    resized_image = image.resize((new_width, new_height))
+    return resized_image
+
 def get_image_from_url(image_url: str):
     """Fetch image from URL."""
     try:

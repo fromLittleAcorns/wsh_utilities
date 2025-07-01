@@ -8,7 +8,7 @@ import shutil
 import traceback
 from typing import Dict, List, Tuple, Union, Optional, Any
 
-from wsh.vis_utils import resize_image_with_max_side_length, get_image_from_url, local_url_to_image
+from wsh.vis_utils import resize_image_with_max_side_length, get_image_from_url, local_url_to_image, resize_image_with_max_height
 
 def create_dataframe_loader_app(
     initial_df=None,
@@ -289,7 +289,7 @@ def create_dataframe_loader_app(
                     img = get_image_from_url(image_url)
             
             if img:
-                img = resize_image_with_max_side_length(img, 600)
+                img = resize_image_with_max_side_length(img, max_image_height)
             
             # Build results for fields in the order they were created
             results = [img]  # Start with image

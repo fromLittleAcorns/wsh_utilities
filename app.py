@@ -7,7 +7,8 @@ from wsh.visulizer import create_dataframe_loader_app
 # Define wsh column names
 column_mapping = {
     "Name": "Name",
-    "Brand": "Brand",
+    "Brands": "Brand",
+    "Categories": "Category",
     "Short description": "Description",
     "Material_new": "Material",
     "Colour_new": "Color",
@@ -23,11 +24,12 @@ column_mapping = {
 
 # Define layouts
 left_fields = ["Fire rated?", "Certified", "Guarantee", "Number of parts"]
-right_fields = ["Name", "Brand", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Weight new", "Pack quantity"]
+right_fields = ["Name", "Brand", "Short description", "Categories", "Colour_new", 
+                "Finish_new", "Material_new", "Dimensions_new", "Weight new", "Pack quantity"]
 
 # Define editable fields
 editable = ["Brand", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Pack quantity", 
-           "Parts", "Fire rated?", "Certified", "Guarantee", "Name", "Weight new"]
+           "Parts", "Fire rated?", "Certified", "Guarantee", "Name", "Weight new", "Categories"]
 
 # Create a visuliser
 vis = create_dataframe_loader_app(
