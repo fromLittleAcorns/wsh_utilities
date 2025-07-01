@@ -24,11 +24,11 @@ column_mapping = {
 
 # Define layouts
 left_fields = ["Fire rated?", "Certified", "Guarantee", "Number of parts"]
-right_fields = ["Name", "Brand", "Short description", "Categories", "Colour_new", 
+right_fields = ["Name", "Brands", "Short description", "Categories", "Colour_new", 
                 "Finish_new", "Material_new", "Dimensions_new", "Weight new", "Pack quantity"]
 
 # Define editable fields
-editable = ["Brand", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Pack quantity", 
+editable = ["Brands", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Pack quantity", 
            "Parts", "Fire rated?", "Certified", "Guarantee", "Name", "Weight new", "Categories"]
 
 # Create a visuliser
