@@ -13,6 +13,7 @@ column_mapping = {
     "Material_new": "Material",
     "Colour_new": "Color",
     "Finish_new": "Finish",
+    "Finish_filter": "Finish (for filter)",
     "Weight new": "Weight",
     "Dimension_new": "Dimensions",
     "Pack quantity": "Pack quantity",
@@ -25,11 +26,12 @@ column_mapping = {
 # Define layouts
 left_fields = ["Fire rated?", "Certified", "Guarantee", "Number of parts"]
 right_fields = ["Name", "Brands", "Short description", "Categories", "Colour_new", 
-                "Finish_new", "Material_new", "Dimensions_new", "Weight new", "Pack quantity"]
+                "Finish_new", "Finish_filter", "Material_new", "Dimensions_new", "Weight new", "Pack quantity"]
 
 # Define editable fields
-editable = ["Brands", "Short description", "Colour_new", "Finish_new", "Material_new", "Dimensions_new", "Pack quantity", 
-           "Parts", "Fire rated?", "Certified", "Guarantee", "Name", "Weight new", "Categories"]
+editable = ["Brands", "Short description", "Colour_new", "Finish_new", "Finish_filter", 
+            "Material_new", "Dimensions_new", "Pack quantity", "Parts", "Fire rated?", 
+            "Certified", "Guarantee", "Name", "Weight new", "Categories"]
 
 # Create a visuliser
 vis = create_dataframe_loader_app(
